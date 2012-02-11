@@ -1,1 +1,8 @@
 cocaine, a sniffer written in C
+
+TODO
+- add checks for IP flags (res,df,mf)
+- add filters (e.g: port 80 && src 192.168.1.1)
+- map hex codes to description (e.g: IP => protocol 6 (TCP) or ICMP => type 0 (echo reply). Now the description between pharentesis is missing.)
+- clean the code
+- add comments
