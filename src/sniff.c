@@ -84,6 +84,7 @@ int main(int argc, char *argv[]){
 		sigaction(SIGINT, &act, NULL);
 
 		while(1){
+			//get packet
 			packet = pcap_next(descr,&pkthdr);
 
 			if(packet != NULL){
