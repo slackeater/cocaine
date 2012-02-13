@@ -9,11 +9,13 @@
 #include <netinet/ip.h>
 #include <linux/udp.h>
 #include <math.h>
+#include <sys/types.h>
 #include "header.h"
 #include "func.c"
 #include "protocols.c"
 
 int main(int argc, char *argv[]){
+	check_user();
 	int c, mode = 1, err_check; //default promiscous mode with mode = 1
 	char *interface = NULL, *protocol = NULL, *view = "simple";
 	bpf_u_int32 netaddr=0, mask=0;

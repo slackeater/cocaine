@@ -22,3 +22,13 @@ void help(){
 	printf("-v\tview mode, if \"full\" is specified, more information about the packet will print.\n\tWorks only with some protocols. Default \"simple\".\n");
 	exit(1);
 }
+
+/**
+ * Check the user
+ */
+void check_user(){
+	if(getuid() != 0){
+		printf("You must be root run in order to run %s.\n", APPNAME);
+		exit(1);
+	}
+}
