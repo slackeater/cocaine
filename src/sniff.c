@@ -9,25 +9,12 @@
 #include <netinet/ip.h>
 #include <linux/udp.h>
 #include <math.h>
+#include "header.h"
 #include "func.c"
-#include "proto_headers.h"
 #include "protocols.c"
 
-#define MAXCAPUTERBYTES 2048
-
-int pktcount = 0, pkt_tot_size = 0;
-time_t start_sniff;
-
-void sighandler(int signum, siginfo_t *info, void *ptr){
-	printf("\nTime elapsed:\t%.0f seconds\n", difftime(time(NULL), start_sniff));
-	printf("Total number of packet sniffed:\t%d\n", pktcount);
-	printf("Total size of packet sniffed:\t%d KB\n", pkt_tot_size);
-	exit(1);
-}
-
-
 int main(int argc, char *argv[]){
-	int c, mode = 1; //default promiscous
+	int c, mode = 1, err_check; //default promiscous mode with mode = 1
 	char *interface = NULL, *protocol = NULL, *view = "simple";
 	bpf_u_int32 netaddr=0, mask=0;
 	struct bpf_program filter;
@@ -36,9 +23,9 @@ int main(int argc, char *argv[]){
 	struct pcap_pkthdr pkthdr;
 	const unsigned char *packet= NULL;
 	struct sigaction act;
+	
 	start_sniff = time(NULL); //start sniff time
 
-	//set sigaction values
 	act.sa_sigaction = sighandler;
 	act.sa_flags = SA_SIGINFO;
 
@@ -58,7 +45,7 @@ int main(int argc, char *argv[]){
 				view = optarg;
 				break;	
 			case 'h':
-				help(argv);
+				help();
 				break;
 		}
 	}
@@ -67,11 +54,33 @@ int main(int argc, char *argv[]){
 	if(protocol != NULL && interface != NULL){
 		descr = pcap_open_live(interface, MAXCAPUTERBYTES, mode, 512, errbuf);
 
-		pcap_lookupnet(interface,&netaddr,&mask,errbuf);
+		if(descr == NULL){
+			perror(errbuf);
+			exit(1);
+		}
 
-		pcap_compile(descr, &filter, protocol,1,mask);
+		err_check = pcap_lookupnet(interface,&netaddr,&mask,errbuf);
 
-		pcap_setfilter(descr,&filter);
+		if(err_check == -1){
+			perror(errbuf);
+			exit(1);
+		}
+
+		err_check = pcap_compile(descr, &filter, protocol,1,mask);
+
+		if(err_check == -1){
+			perror(pcap_geterr(descr));
+			exit(1);
+		}
+
+		err_check = pcap_setfilter(descr,&filter);
+
+		if(err_check == -1){
+			perror(pcap_geterr(descr));
+			exit(1);
+		}
+
+		//action to bo taken when SIGINT occurs
 		sigaction(SIGINT, &act, NULL);
 
 		while(1){

@@ -1,27 +1,24 @@
-/*char *ip_to_string(unsigned int ip){
-	double power = 0, num = 0;
-	static char ipDotted[15] = "0.0.0.0";
-	int i,octet[4],octCount = 3;
-	unsigned int tmp_ip = ip;
+/**
+ * Print statistics on CTRL+C
+ * @param int signum the number of the signal
+ * @param siginfo_t *info the address to the siginfo_t structure
+ * @param void *ptr null
+ */
+void sighandler(int signum, siginfo_t *info, void *ptr){
+	printf("\nTime elapsed:\t%.0f seconds\n", difftime(time(NULL), start_sniff));
+	printf("Total number of packet sniffed:\t%d\n", pktcount);
+	printf("Total size of packet sniffed:\t%d KB\n", pkt_tot_size);
+	exit(1);
+}
 
-	for(i = 0 ; i <= 32 ; i++, power++, tmp_ip /= 2){
-		if(i != 0 && ((i % 8) == 0)){
-			octet[octCount] = (int)num;
-			num = power = 0;
-			octCount--;
-		}
-
-		if((tmp_ip % 2) == 1)
-			num += pow(2,power);
-	}
-
-	sprintf(ipDotted,"%d.%d.%d.%d",octet[0],octet[1],octet[2],octet[3]);
-	return ipDotted;
-}*/
-
-void help(char *argv[]){
-	printf("Usage: %s -i <interface> -p <protocol> -m <mode>\n",argv[0]);
-	printf("-i the network interface used to listen\n");
-	printf("-p the protocol to sniff\n");
-	printf("-m if set to 0 enable promiscous mode (default), 1 to disable\n");
+/**
+ * Print the help
+ */
+void help(){
+	printf("Usage: %s -i <interface> -p <protocol> -m <mode> -v <type>\n",APPNAME);
+	printf("-i\tthe network interface used to listen\n");
+	printf("-p\tthe protocol to sniff (tcp, udp, ip, icmp, arp)\n");
+	printf("-m\tif set to 0 enable promiscous mode (default), 1 to disable\n");
+	printf("-v\tview mode, if \"full\" is specified, more information about the packet will print.\n\tWorks only with some protocols. Default \"simple\".\n");
+	exit(1);
 }

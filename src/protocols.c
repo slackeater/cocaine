@@ -1,28 +1,35 @@
-char *get_text_ip(struct ip *iphdr, char *type){
-	static char dst[INET_ADDRSTRLEN];
-
-	if(strcmp("src",type) == 0)
-		inet_ntop(AF_INET, &iphdr->ip_src, dst, INET_ADDRSTRLEN);
-	if(strcmp("dst",type) == 0)
-		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
-
-	return dst;
-
-}
-
-
+/**
+ * Print simple information about IP protocol
+ * @param unsigned char *packet a given packet
+ */
 void print_ip_simple(const unsigned char *packet){
 	//point to IP header(14 ehternet)
 	struct ip *ipheader = (struct ip *)(packet+14);
-	printf("src ip %s ---> ",get_text_ip(ipheader, "src"));
-	printf("dst ip %s\n",get_text_ip(ipheader, "dst"));
+
+	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
+
+	inet_ntop(AF_INET, &ipheader->ip_src, src, INET_ADDRSTRLEN);
+	inet_ntop(AF_INET, &ipheader->ip_dst, dst, INET_ADDRSTRLEN);
+
+	printf("src ip %s ---> ",src);
+	printf("dst ip %s\n",dst);
 }
 
+/**
+ * Print full information about IP protocol
+ * @param unsigned char *packet a given packet
+ */
 void print_ip_full(const unsigned char *packet){
 	//point to IP header(14 ehternet)
 	struct ip *ipheader = (struct ip *)(packet+14);
-	printf("src ip %s ---> ",get_text_ip(ipheader, "src"));
-	printf("dst ip %s\n",get_text_ip(ipheader, "dst"));
+
+	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
+
+	inet_ntop(AF_INET, &ipheader->ip_src, src, INET_ADDRSTRLEN);
+	inet_ntop(AF_INET, &ipheader->ip_dst, dst, INET_ADDRSTRLEN);
+
+	printf("src ip %s ---> ",src);
+	printf("dst ip %s\n",dst);
 	printf("version %u\n",ipheader->ip_v);
 	printf("tos %u\n",ipheader->ip_tos);
 	printf("tot len %u\n",ntohs(ipheader->ip_len));
@@ -33,6 +40,11 @@ void print_ip_full(const unsigned char *packet){
 	printf("check 0x%x\n\n",ntohs(ipheader->ip_sum));
 }
 
+/**
+ * Print simple information about TCP protocol
+ * @param unsigned char *packet a given packet
+ */
+
 void print_tcp_simple(const unsigned char *packet){
 	//point to TCP header (14 ethernet + 20 IP)		
 	struct tcphdr *tcpheader = (struct tcphdr *)(packet+34); 
@@ -41,6 +53,10 @@ void print_tcp_simple(const unsigned char *packet){
 	printf("src port %d ---> dst port %d\n\n",ntohs(tcpheader->source),ntohs(tcpheader->dest));
 }
 
+/**
+ * Print full information about TCP protocol
+ * @param unsigned char *packet a given packet
+ */
 void print_tcp_full(const unsigned char *packet){
 	//point to TCP header (14 ethernet + 20 IP)		
 	struct tcphdr *tcpheader = (struct tcphdr *)(packet+34); 
@@ -55,6 +71,10 @@ void print_tcp_full(const unsigned char *packet){
 	printf("urg ptr %d\n\n", ntohs(tcpheader->urg_ptr));
 }
 
+/**
+ * Print information about UDP protocol
+ * @param unsigned char *packet a given packet
+ */
 void print_udp(const unsigned char *packet){
 	//point to UDP header (14 ethernet + 20 IP)
 	struct udphdr *udpheader = (struct udphdr *)(packet+34);
@@ -65,6 +85,10 @@ void print_udp(const unsigned char *packet){
 	printf("checksum  0x%x\n\n",ntohs(udpheader->check));
 }
 
+/**
+ * Print information about ICMP protocol
+ * @param unsigned char *packet a given packet
+ */
 void print_icmp(const unsigned char *packet){
 	struct icmp *icmphdr = (struct icmp *)(packet+34);
 
@@ -72,6 +96,10 @@ void print_icmp(const unsigned char *packet){
 	printf("Type %u\t Code %u\t Checksum 0x%x\n\n", icmphdr->type, icmphdr->code, ntohs(icmphdr->checksum));
 }
 
+/**
+ * Print information about ARP protocol
+ * @param unsigned char *packet a given packet
+ */
 void print_arp(const unsigned char *packet){
 	struct arp *arphdr = (struct arp *)(packet+14);
 	int i;
