@@ -16,8 +16,8 @@
 
 int main(int argc, char *argv[]){
 	check_user();
-	int c, mode = 1, err_check; //default promiscous mode with mode = 1
-	char *interface = NULL, *protocol = NULL, *view = "simple";
+	int c, mode = 1; //default promiscous mode with mode = 1
+	char *interface = NULL, *view = "simple", *expression;
 	bpf_u_int32 netaddr=0, mask=0;
 	struct bpf_program filter;
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 	act.sa_flags = SA_SIGINFO;
 
 	//options management
-	while((c = getopt(argc,argv,"m:hi:p:v:")) != -1){
+	while((c = getopt(argc,argv,"m:hi:v:e:")) != -1){
 		switch(c){
 			case 'i':
 				interface = optarg;
@@ -40,20 +40,19 @@ int main(int argc, char *argv[]){
 			case 'm':
 				mode = atoi(optarg);
 				break;
-			case 'p':
-				protocol = optarg;
-				break;
 			case 'v':
 				view = optarg;
 				break;	
 			case 'h':
 				help();
 				break;
+			case 'e':
+				expression = optarg;
+				break;
 		}
 	}
 
-	//start sniffing
-	if(protocol != NULL && interface != NULL){
+	if(expression != NULL && interface != NULL){
 		descr = pcap_open_live(interface, MAXCAPUTERBYTES, mode, 512, errbuf);
 
 		if(descr == NULL){
@@ -61,23 +60,17 @@ int main(int argc, char *argv[]){
 			exit(1);
 		}
 
-		err_check = pcap_lookupnet(interface,&netaddr,&mask,errbuf);
-
-		if(err_check == -1){
+		if(pcap_lookupnet(interface,&netaddr,&mask,errbuf) == -1){
 			perror(errbuf);
 			exit(1);
 		}
 
-		err_check = pcap_compile(descr, &filter, protocol,1,mask);
-
-		if(err_check == -1){
+		if(pcap_compile(descr, &filter, expression,1,mask) == -1){
 			perror(pcap_geterr(descr));
 			exit(1);
 		}
 
-		err_check = pcap_setfilter(descr,&filter);
-
-		if(err_check == -1){
+		if(pcap_setfilter(descr,&filter) == -1){
 			perror(pcap_geterr(descr));
 			exit(1);
 		}
@@ -93,21 +86,21 @@ int main(int argc, char *argv[]){
 				printf("Packet #: %d - Packet size: %d KB - %s", ++pktcount, pkthdr.len, ctime(&pkthdr.ts.tv_sec));
 				pkt_tot_size += pkthdr.len;
 
-				if(strcmp(protocol,"tcp") == 0)
+				if(strcmp(expression,"tcp") == 0)
 					strcmp("full", view) == 0 ? print_tcp_full(packet) : print_tcp_simple(packet);
-				else if(strcmp(protocol,"udp") == 0)
+				else if(strcmp(expression,"udp") == 0)
 					print_udp(packet);
-				else if(strcmp(protocol,"ip") == 0)
+				else if(strcmp(expression,"ip") == 0)
 					strcmp("full", view) == 0 ? print_ip_full(packet) : print_ip_simple(packet);
-				else if(strcmp(protocol,"icmp") == 0)
+				else if(strcmp(expression,"icmp") == 0)
 					print_icmp(packet);
-				else if(strcmp(protocol,"arp") == 0)
+				else if(strcmp(expression,"arp") == 0)
 					print_arp(packet);
 			}
 		}
 	}
 	else{
-		fprintf(stderr,"Please choose an interface and a protocol\n");
+		fprintf(stderr,"Please choose an interface and a expression\n");
 	}
 
 	return 0;

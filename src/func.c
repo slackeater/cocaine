@@ -7,7 +7,7 @@
 void sighandler(int signum, siginfo_t *info, void *ptr){
 	printf("\nTime elapsed:\t%.0f seconds\n", difftime(time(NULL), start_sniff));
 	printf("Total number of packet sniffed:\t%d\n", pktcount);
-	printf("Total size of packet sniffed:\t%d KB\n", pkt_tot_size);
+	printf("Total size of packet sniffed:\t%d Bytes\n", pkt_tot_size);
 	exit(1);
 }
 
