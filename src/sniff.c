@@ -7,6 +7,9 @@
 #include <pcap.h>
 #include <netinet/tcp.h>
 #include <netinet/ip.h>
+#include <netinet/ether.h>
+#include <netinet/ip_icmp.h>
+#include <net/if_arp.h>
 #include <linux/udp.h>
 #include <math.h>
 #include <sys/types.h>
@@ -17,7 +20,7 @@
 int main(int argc, char *argv[]){
 	check_user();
 	int c, mode = 1; //default promiscous mode with mode = 1
-	char *interface = NULL, *view = "simple", *expression;
+	char *interface = NULL, *expression;
 	bpf_u_int32 netaddr=0, mask=0;
 	struct bpf_program filter;
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -32,7 +35,7 @@ int main(int argc, char *argv[]){
 	act.sa_flags = SA_SIGINFO;
 
 	//options management
-	while((c = getopt(argc,argv,"m:hi:v:e:")) != -1){
+	while((c = getopt(argc,argv,"m:hi:v:e:c::")) != -1){
 		switch(c){
 			case 'i':
 				interface = optarg;
@@ -48,6 +51,9 @@ int main(int argc, char *argv[]){
 				break;
 			case 'e':
 				expression = optarg;
+				break;
+			case 'c':
+				compute_sum = 1;
 				break;
 		}
 	}
@@ -86,7 +92,8 @@ int main(int argc, char *argv[]){
 				printf("Packet #: %d - Packet size: %d KB - %s", ++pktcount, pkthdr.len, ctime(&pkthdr.ts.tv_sec));
 				pkt_tot_size += pkthdr.len;
 
-				if(strcmp(expression,"tcp") == 0)
+				print_packet(packet);
+		/*		if(strcmp(expression,"tcp") == 0)
 					strcmp("full", view) == 0 ? print_tcp_full(packet) : print_tcp_simple(packet);
 				else if(strcmp(expression,"udp") == 0)
 					print_udp(packet);
@@ -96,6 +103,7 @@ int main(int argc, char *argv[]){
 					print_icmp(packet);
 				else if(strcmp(expression,"arp") == 0)
 					print_arp(packet);
+					*/
 			}
 		}
 	}
