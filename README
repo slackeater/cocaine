@@ -7,6 +7,4 @@ FEATURES (very basic)
 
 TODO
 - add name resolution for IP (adns, udns, dns.c)
-- add checks for IP flags (res,df,mf)
-- map hex codes to description (e.g: IP => protocol 6 (TCP) or ICMP => type 0 (echo reply). Now the description between pharentesis is missing.)
 - output in HTLM format. Useful for example when we want to check the sniffer results via web

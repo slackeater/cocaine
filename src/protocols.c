@@ -41,8 +41,53 @@ void print_udp(const unsigned char *packet){
  */
 void print_icmp(const unsigned char *packet){
 	struct icmphdr *icmp = (struct icmphdr *)(packet+34);
+	char *icmp_msg_string = "";
 	printf("-------------------------\n");
-	printf("Type %u\t Code %u\t Checksum 0x%x\n\n", icmp->type, icmp->code, ntohs(icmp->checksum));
+
+	switch(icmp->type){
+		case ICMP_ECHOREPLY:
+			icmp_msg_string = "echo reply";
+			break;
+		case ICMP_DEST_UNREACH:
+			icmp_msg_string = "dest unreachable";
+			break;
+		case ICMP_SOURCE_QUENCH:
+			icmp_msg_string = "source quench";
+			break;
+		case ICMP_REDIRECT:
+			icmp_msg_string = "redirect";
+			break;
+		case ICMP_ECHO:
+			icmp_msg_string = "echo request";
+			break;
+		case ICMP_TIME_EXCEEDED:
+			icmp_msg_string = "time exceeded";
+			break;
+		case ICMP_PARAMETERPROB:
+			icmp_msg_string = "parameter problem";
+			break;
+		case ICMP_TIMESTAMP:
+			icmp_msg_string = "timestamp request";
+			break;
+		case ICMP_TIMESTAMPREPLY:
+			icmp_msg_string = "timestamp reply";
+			break;
+		case ICMP_INFO_REQUEST:
+			icmp_msg_string = "information request";
+			break;
+		case ICMP_INFO_REPLY:
+			icmp_msg_string = "information reply";
+			break;
+		case ICMP_ADDRESS:
+			icmp_msg_string = "address mask request";
+			break;
+		case ICMP_ADDRESSREPLY:
+			icmp_msg_string = "address mask reply";
+			break;
+	}
+
+	printf("Type %u (%s)\n", icmp->type, icmp_msg_string);
+	printf("Code %u\t Checksum 0x%x\n\n", icmp->code, ntohs(icmp->checksum));
 }
 
 /**
@@ -60,15 +105,15 @@ void print_arp(const unsigned char *packet){
 	printf("Sender MAC: ");
 	for(i = 0 ; i < 5 ; i++) printf("%02x:", arphdr->sha[i]);
 	printf("%02x", arphdr->sha[5]);
-	
+
 	printf("\nSender IP: ");
 	for(i = 0 ; i < 3 ; i++) printf("%u.", arphdr->spa[i]);
 	printf("%u", arphdr->spa[3]);
-	
+
 	printf("\nTarget MAC: ");
 	for(i = 0 ; i < 5 ; i++) printf("%02x:", arphdr->tha[i]);
 	printf("%02x", arphdr->sha[5]);
-	
+
 	printf("\nTarget IP: ");
 	for(i = 0 ; i < 3 ; i++) printf("%u.", arphdr->tpa[i]);
 	printf("%u", arphdr->tpa[3]);
@@ -111,7 +156,7 @@ void print_ip_simple(const unsigned char *packet){
 	printf("-------------------------\n");
 	printf("src ip %s ---> ",src);
 	printf("dst ip %s\n",dst);
-	
+
 	select_protocol(iphdr->ip_p, packet);
 }
 
@@ -122,7 +167,7 @@ void print_ip_simple(const unsigned char *packet){
 void print_ip_full(const unsigned char *packet){
 	struct ip *iphdr = (struct ip *)(packet+14);
 	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
-	char *checksum_correct = "(correct)";
+	char *checksum_correct = "(correct)", *protocol_string = "";
 
 	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
@@ -132,8 +177,25 @@ void print_ip_full(const unsigned char *packet){
 	printf("dst ip %s\n",dst);
 	printf("version %u\t  \ttos %u\n",iphdr->ip_v, iphdr->ip_tos);
 	printf("tot len %u\t  \tidentification %u\n",ntohs(iphdr->ip_len), ntohs(iphdr->ip_len));
-	printf("frag offset %u\t  \tttl %d\n",ntohs(iphdr->ip_off), iphdr->ip_ttl);
-	printf("protocol %d\t  \tIP checksum 0x%x",iphdr->ip_p, ntohs(iphdr->ip_sum));
+	unsigned short fragment_offset = ntohs(iphdr->ip_off);
+	printf("flags [ %s %s %s ] \n", fragment_offset&IP_RF != 0 ? "RF" : "0", fragment_offset&IP_DF ? "DF" : "0", fragment_offset&IP_MF ? "MF" : "0");
+	printf("frag offset %u\t  \tttl %d\n",fragment_offset&IP_OFFMASK, iphdr->ip_ttl);
+
+
+	switch(iphdr->ip_p){
+		case IPPROTO_ICMP:
+			protocol_string = "ICMP";
+			break;
+		case IPPROTO_TCP:
+			protocol_string = "TCP";
+			break;
+		case IPPROTO_UDP:
+			protocol_string = "UDP";
+			break;
+	}
+
+
+	printf("protocol %d (%s)\t  \tIP checksum 0x%x",iphdr->ip_p, protocol_string, ntohs(iphdr->ip_sum));
 
 	//if the -c option is specified
 	if(compute_sum && compute_checksum_ipv4(iphdr))
