@@ -138,7 +138,6 @@ void select_protocol(u_int8_t ip_protocol, const unsigned char *packet){
 		case 17: 	//UDP
 			print_udp(packet);
 			break;
-
 	}
 }
 
@@ -223,5 +222,3 @@ void print_packet(const unsigned char *packet){
 			break;
 	}	
 }
-
-
