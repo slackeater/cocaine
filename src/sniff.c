@@ -89,21 +89,10 @@ int main(int argc, char *argv[]){
 			packet = pcap_next(descr,&pkthdr);
 
 			if(packet != NULL){
-				printf("Packet #: %d - Packet size: %d KB - %s", ++pktcount, pkthdr.len, ctime(&pkthdr.ts.tv_sec));
+				printf("\033[0;34mPacket #: %d\033[0m - Packet size: %d Bytes - %s", ++pktcount, pkthdr.len, ctime(&pkthdr.ts.tv_sec));
 				pkt_tot_size += pkthdr.len;
 
 				print_packet(packet);
-		/*		if(strcmp(expression,"tcp") == 0)
-					strcmp("full", view) == 0 ? print_tcp_full(packet) : print_tcp_simple(packet);
-				else if(strcmp(expression,"udp") == 0)
-					print_udp(packet);
-				else if(strcmp(expression,"ip") == 0)
-					strcmp("full", view) == 0 ? print_ip_full(packet) : print_ip_simple(packet);
-				else if(strcmp(expression,"icmp") == 0)
-					print_icmp(packet);
-				else if(strcmp(expression,"arp") == 0)
-					print_arp(packet);
-					*/
 			}
 		}
 	}
