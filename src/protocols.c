@@ -152,10 +152,11 @@ void print_ip_simple(const unsigned char *packet){
 	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
 
-	printf("-------------------------\n");
-	printf("src ip %s ---> ",src);
-	printf("dst ip %s\n",dst);
+	char *container_string;
 
+	sprintf(container_string, "-------------------------\nsrc ip %s ---> dst ip %s\n", src, dst);
+
+	printf("%s", container_string);
 	select_protocol(iphdr->ip_p, packet);
 }
 
@@ -167,9 +168,24 @@ void print_ip_full(const unsigned char *packet){
 	struct ip *iphdr = (struct ip *)(packet+14);
 	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
 	char *checksum_correct = "(correct)", *protocol_string = "";
+	//char *hostname =  "blabla";
 
 	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
+
+	struct sockaddr_in mysock;
+	mysock.sin_family = AF_INET;
+	mysock.sin_port = htons(12);
+	mysock.sin_addr = iphdr->ip_src;
+	int error;
+
+	const struct sockaddr *socks = (const struct sockaddr *)&mysock;
+
+	//error = getnameinfo(socks, sizeof(socks), hostname, sizeof(50), NULL,0,0);
+	
+	//printf("ERORR %d |  %s", error, gai_strerror(error));
+
+	//printf("RESOLVED %s", hostname);
 
 	printf("-------------------------\n");
 	printf("src ip %s ---> ",src);

@@ -13,6 +13,8 @@
 #include <linux/udp.h>
 #include <math.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 #include "header.h"
 #include "func.c"
 #include "protocols.c"
@@ -28,7 +30,7 @@ int main(int argc, char *argv[]){
 	struct pcap_pkthdr pkthdr;
 	const unsigned char *packet= NULL;
 	struct sigaction act;
-	
+
 	start_sniff = time(NULL); //start sniff time
 
 	act.sa_sigaction = sighandler;

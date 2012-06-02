@@ -1,3 +1,4 @@
+
 cocaine, a sniffer written in C
 
 FEATURES (very basic)
@@ -8,3 +9,7 @@ FEATURES (very basic)
 TODO
 - add name resolution for IP (adns, udns, dns.c)
 - output in HTLM format. Useful for example when we want to check the sniffer results via web
+
+COMPILE
+
+gcc -lpcap -o cocaine

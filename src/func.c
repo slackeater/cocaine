@@ -17,7 +17,7 @@ void sighandler(int signum, siginfo_t *info, void *ptr){
 void help(){
 	printf("Usage: %s -i <interface> -e <protocol> -m <mode> -v <type> -c\n",APPNAME);
 	printf("-i\tthe network interface used to listen\n");
-	printf("-e\ta filter to select which packets sniff (currently available: tcp, udp, ip, icmp, arp)\n");
+	printf("-e\ta filter to select which packets sniff (currently available: tcp, udp, ip, icmp, arp).\n\tExample: \"tcp && port 80\"\n");
 	printf("-m\tif set to 0 enable promiscous mode (default), 1 to disable\n");
 	printf("-v\tview mode, if \"full\" is specified, more information about the packet will print.\n\tWorks only with some protocols. Default \"simple\".\n");
 	printf("-c\tcontrols if the IPv4 checksum is correct\n");
