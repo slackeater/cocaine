@@ -5,11 +5,11 @@ FEATURES (very basic)
 - sniff IP, TCP, UDP, ICMP, ARP
 - tcpdump filters
 - IPv4 checksum verification
+- DNS names resolution (to test)
 
 TODO
-- add name resolution for IP (adns, udns, dns.c)
 - output in HTLM format. Useful for example when we want to check the sniffer results via web
 
 COMPILE
 
-gcc -lpcap -o cocaine
+gcc -lpcap -Wall -g sniff.c -o ../bin/cocaine
