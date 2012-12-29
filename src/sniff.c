@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+#include <arpa/inet.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]){
 	act.sa_flags = SA_SIGINFO;
 
 	//options management
-	while((c = getopt(argc,argv,"m:hi:v:e:c::")) != -1){
+	while((c = getopt(argc,argv,"m:hi:e:c::inv")) != -1){
 		switch(c){
 			case 'i':
 				interface = optarg;
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]){
 				mode = atoi(optarg);
 				break;
 			case 'v':
-				view = optarg;
+				view = 1; //verbose
 				break;	
 			case 'h':
 				help();
@@ -57,6 +58,9 @@ int main(int argc, char *argv[]){
 			case 'c':
 				compute_sum = 1;
 				break;
+			case 'n':
+				resolve_name = 1;
+			        break;
 		}
 	}
 
@@ -93,7 +97,7 @@ int main(int argc, char *argv[]){
 			if(packet != NULL){
 				printf("\033[0;34mPacket #: %d\033[0m - Packet size: %d Bytes - %s", ++pktcount, pkthdr.len, ctime(&pkthdr.ts.tv_sec));
 				pkt_tot_size += pkthdr.len;
-
+				
 				print_packet(packet);
 			}
 		}

@@ -5,8 +5,9 @@
 
 int pktcount = 0, pkt_tot_size = 0;
 time_t start_sniff;
-char *view = "simple";
+int view = 0; //simple per default
 int compute_sum = 0;
+int resolve_name = 0; //name resolution default disabled
 
 /** Header for ARP */
 struct arp {

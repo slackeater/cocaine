@@ -133,7 +133,7 @@ void select_protocol(u_int8_t ip_protocol, const unsigned char *packet){
 			print_icmp(packet);
 			break;
 		case 6: 	//TCP
-			(strcmp(view, "full") == 0) ? print_tcp_full(packet) : print_tcp_simple(packet);
+			(view == 1) ? print_tcp_full(packet) : print_tcp_simple(packet);
 			break;
 		case 17: 	//UDP
 			print_udp(packet);
@@ -148,15 +148,14 @@ void select_protocol(u_int8_t ip_protocol, const unsigned char *packet){
 void print_ip_simple(const unsigned char *packet){
 	struct ip *iphdr = (struct ip *)(packet+14);
 	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
+	//char *dest_var;
 
 	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
 
-	char *container_string;
+	//resolveAddressToName(iphdr->ip_src.s_addr, dest_var);
 
-	sprintf(container_string, "-------------------------\nsrc ip %s ---> dst ip %s\n", src, dst);
-
-	printf("%s", container_string);
+	printf("-------------------------\nsrc ip %s ---> dst ip %s\n", src, dst);
 	select_protocol(iphdr->ip_p, packet);
 }
 
@@ -173,29 +172,13 @@ void print_ip_full(const unsigned char *packet){
 	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
 
-	struct sockaddr_in mysock;
-	mysock.sin_family = AF_INET;
-	mysock.sin_port = htons(12);
-	mysock.sin_addr = iphdr->ip_src;
-	int error;
-
-	const struct sockaddr *socks = (const struct sockaddr *)&mysock;
-
-	//error = getnameinfo(socks, sizeof(socks), hostname, sizeof(50), NULL,0,0);
-	
-	//printf("ERORR %d |  %s", error, gai_strerror(error));
-
-	//printf("RESOLVED %s", hostname);
-
-	printf("-------------------------\n");
 	printf("src ip %s ---> ",src);
 	printf("dst ip %s\n",dst);
 	printf("version %u\t  \ttos %u\n",iphdr->ip_v, iphdr->ip_tos);
 	printf("tot len %u\t  \tidentification %u\n",ntohs(iphdr->ip_len), ntohs(iphdr->ip_len));
 	unsigned short fragment_offset = ntohs(iphdr->ip_off);
-	printf("flags [ %s %s %s ] \n", fragment_offset&IP_RF != 0 ? "RF" : "0", fragment_offset&IP_DF ? "DF" : "0", fragment_offset&IP_MF ? "MF" : "0");
+	printf("flags [ %s %s %s ] \n", (fragment_offset&IP_RF) != 0 ? "RF" : "0", fragment_offset&IP_DF ? "DF" : "0", fragment_offset&IP_MF ? "MF" : "0");
 	printf("frag offset %u\t  \tttl %d\n",fragment_offset&IP_OFFMASK, iphdr->ip_ttl);
-
 
 	switch(iphdr->ip_p){
 		case IPPROTO_ICMP:
@@ -208,7 +191,6 @@ void print_ip_full(const unsigned char *packet){
 			protocol_string = "UDP";
 			break;
 	}
-
 
 	printf("protocol %d (%s)\t  \tIP checksum 0x%x",iphdr->ip_p, protocol_string, ntohs(iphdr->ip_sum));
 
@@ -231,10 +213,11 @@ void print_packet(const unsigned char *packet){
 
 	switch(htons(ethhdr->ether_type)){
 		case ETHERTYPE_IP:
-			(strcmp(view, "full") == 0) ? print_ip_full(packet) : print_ip_simple(packet);
+			(view == 1) ? print_ip_full(packet): print_ip_simple(packet);
 			break;
 		case ETHERTYPE_ARP:
 			print_arp(packet);
 			break;
-	}	
+	}
+
 }
