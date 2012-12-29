@@ -2,6 +2,7 @@
 #define MAXCAPUTERBYTES 2048
 #define TRUE 1
 #define FALSE !1
+#define MAX_HOST_NAME 50
 
 int pktcount = 0, pkt_tot_size = 0;
 time_t start_sniff;

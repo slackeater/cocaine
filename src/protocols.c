@@ -148,14 +148,29 @@ void select_protocol(u_int8_t ip_protocol, const unsigned char *packet){
 void print_ip_simple(const unsigned char *packet){
 	struct ip *iphdr = (struct ip *)(packet+14);
 	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
-	//char *dest_var;
+	char *src_name, *dst_name;
 
-	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
-	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
+	if(resolve_name){
+		src_name = malloc(MAX_HOST_NAME);
+		dst_name = malloc(MAX_HOST_NAME);
 
-	//resolveAddressToName(iphdr->ip_src.s_addr, dest_var);
+		//try to get a name for the ip address
+		resolve_address_to_name(iphdr->ip_src.s_addr, src_name);
+		resolve_address_to_name(iphdr->ip_dst.s_addr, dst_name);
 
-	printf("-------------------------\nsrc ip %s ---> dst ip %s\n", src, dst);
+		printf("-------------------------\nsrc %s ---> dst %s\n", src_name, dst_name);
+
+		free(src_name);
+		free(dst_name);
+	}
+	else{
+		//print IP directly
+		inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
+
+		printf("-------------------------\nsrc ip %s ---> dst ip %s\n", src, dst);
+	}
+
 	select_protocol(iphdr->ip_p, packet);
 }
 
@@ -167,13 +182,31 @@ void print_ip_full(const unsigned char *packet){
 	struct ip *iphdr = (struct ip *)(packet+14);
 	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
 	char *checksum_correct = "(correct)", *protocol_string = "";
-	//char *hostname =  "blabla";
+	char *src_name, *dst_name;
 
-	inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
-	inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
+	if(resolve_name){
+		src_name = malloc(MAX_HOST_NAME);
+		dst_name = malloc(MAX_HOST_NAME);
 
-	printf("src ip %s ---> ",src);
-	printf("dst ip %s\n",dst);
+		//try to get a name for the ip address
+		resolve_address_to_name(iphdr->ip_src.s_addr, src_name);
+		resolve_address_to_name(iphdr->ip_dst.s_addr, dst_name);
+
+		printf("src %s ---> ", src_name);		
+		printf("dst %s\n", dst_name);		
+
+		free(src_name);
+		free(dst_name);
+	}
+	else{
+		//print IP directly
+		inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
+		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
+		
+		printf("src ip %s ---> ",src);
+		printf("dst ip %s\n",dst);
+	}
+
 	printf("version %u\t  \ttos %u\n",iphdr->ip_v, iphdr->ip_tos);
 	printf("tot len %u\t  \tidentification %u\n",ntohs(iphdr->ip_len), ntohs(iphdr->ip_len));
 	unsigned short fragment_offset = ntohs(iphdr->ip_off);

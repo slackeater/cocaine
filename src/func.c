@@ -76,16 +76,14 @@ int compute_checksum_ipv4(struct ip *iphdr){
 	return (results == ntohs(iphdr->ip_sum));
 }
 
-int resolveAddressToName(unsigned long addr, char *reverseName){
+int resolve_address_to_name(unsigned long addr, char *hostname){
 	struct sockaddr_in netparam;
-	
 	netparam.sin_family = AF_INET;
 	netparam.sin_port = htons(0);
 	netparam.sin_addr.s_addr = addr;
 
-	getnameinfo((struct sockaddr *)&netparam, sizeof(netparam), reverseName, NI_MAXHOST, NULL, sizeof(NULL), 0);
-
-	printf("NAME IS: %s", reverseName);
+	getnameinfo((struct sockaddr *)&netparam, sizeof(netparam), hostname, MAX_HOST_NAME, NULL, sizeof(NULL), 0);
 
 	return 1;
+		
 }
