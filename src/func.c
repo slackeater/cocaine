@@ -76,14 +76,24 @@ int compute_checksum_ipv4(struct ip *iphdr){
 	return (results == ntohs(iphdr->ip_sum));
 }
 
+/**
+ * Resolve a given IP address to a name 
+ * @param unsigned long addr The IP address in its binary form rapresentation 
+ * @param char * hostname the variable that must be used to store the hostname. It must be initialized with malloc(MAX_HOST_NAME).
+ * @return 1 in case of success, -1 in case of failure
+ */
 int resolve_address_to_name(unsigned long addr, char *hostname){
 	struct sockaddr_in netparam;
 	netparam.sin_family = AF_INET;
 	netparam.sin_port = htons(0);
 	netparam.sin_addr.s_addr = addr;
 
-	getnameinfo((struct sockaddr *)&netparam, sizeof(netparam), hostname, MAX_HOST_NAME, NULL, sizeof(NULL), 0);
-
-	return 1;
-		
+	if(getnameinfo((struct sockaddr *)&netparam, sizeof(netparam), hostname, MAX_HOST_NAME, NULL, sizeof(NULL), 0) == 0) return 0;
+	else{
+		perror("getnameinfo");
+	       	return -1;
+	}
+	      
+       return 0;	
 }
+
