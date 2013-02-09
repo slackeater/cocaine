@@ -16,6 +16,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <ctype.h>
 #include "header.h"
 #include "func.c"
 #include "protocols.c"
@@ -99,6 +100,8 @@ int main(int argc, char *argv[]){
 				pkt_tot_size += pkthdr.len;
 				
 				print_packet(packet);
+				//line break after every packet
+				printf("\n\n");
 			}
 		}
 	}

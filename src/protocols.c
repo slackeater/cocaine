@@ -4,8 +4,22 @@
  */
 void print_tcp_simple(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
-	printf("-------------------------\n");
+	int i;
+	
+	printf("--------- TCP Header --------\n");
 	printf("src port %d ---> dst port %d\n\n",ntohs(tcp->source),ntohs(tcp->dest));
+
+
+
+	for(i = 0 ; i < strlen((char *)packet+58) ; i++){
+		if(isprint(packet[58+i]))
+			printf("%c", packet[58+i]);
+		else
+			printf(".");
+
+		//after 60 character print new line
+		if(i % 60 == 0 && i != 0) printf("\n\r");
+	}
 }
 
 /**
@@ -14,7 +28,7 @@ void print_tcp_simple(const unsigned char *packet){
  */
 void print_tcp_full(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
-	printf("-------------------------\n");
+	printf("--------- TCP Header --------\n");
 	printf("src port %d ---> dst port %d\n",ntohs(tcp->source),ntohs(tcp->dest));
 	printf("seq num  %u, ack num  %u\n",ntohl(tcp->seq),ntohl(tcp->ack_seq));
 	printf("flags [ %s   %s   %s   %s   %s   %s ]\n", ntohs(tcp->fin) > 0 ? "FIN" : "0",ntohs(tcp->syn) > 0 ? "SYN" : "0",ntohs(tcp->rst) > 0 ? "RST" : "0",ntohs(tcp->psh) > 0 ? "PSH" : "0",ntohs(tcp->ack) > 0 ? "ACK" : "0",ntohs(tcp->urg) > 0 ? "URG" : "0");
@@ -29,7 +43,7 @@ void print_tcp_full(const unsigned char *packet){
  */
 void print_udp(const unsigned char *packet){
 	struct udphdr *udp = (struct udphdr *)(packet+34);
-	printf("-------------------------\n");
+	printf("-------- UDP Header --------\n");
 	printf("src port %d ---> dst port %d\n", ntohs(udp->source), ntohs(udp->dest));
 	printf("dgram len %d\n",ntohs(udp->len));
 	printf("UDP checksum  0x%x\n\n",ntohs(udp->check));
@@ -42,7 +56,7 @@ void print_udp(const unsigned char *packet){
 void print_icmp(const unsigned char *packet){
 	struct icmphdr *icmp = (struct icmphdr *)(packet+34);
 	char *icmp_msg_string = "";
-	printf("-------------------------\n");
+	printf("-------- ICMP --------\n");
 
 	switch(icmp->type){
 		case ICMP_ECHOREPLY:
@@ -98,7 +112,7 @@ void print_arp(const unsigned char *packet){
 	struct arp *arphdr = (struct arp *)(packet+14);
 	int i;
 
-	printf("-------------------------\n");
+	printf("-------- ARP Header --------\n");
 	printf("Hardware type 0x%04x | Protocol type 0x%04x\n", ntohs(arphdr->hw_type), ntohs(arphdr->proto_type));
 	printf("Hardware addr len %u | Protocol add len %u\n", arphdr->hlen, arphdr->plen);
 	printf("Operation 0x%04x\n", ntohs(arphdr->operation));
@@ -158,7 +172,7 @@ void print_ip_simple(const unsigned char *packet){
 		resolve_address_to_name(iphdr->ip_src.s_addr, src_name);
 		resolve_address_to_name(iphdr->ip_dst.s_addr, dst_name);
 
-		printf("-------------------------\nsrc %s ---> dst %s\n", src_name, dst_name);
+		printf("-------- IP Header --------\nsrc %s ---> dst %s\n", src_name, dst_name);
 
 		free(src_name);
 		free(dst_name);
@@ -168,7 +182,7 @@ void print_ip_simple(const unsigned char *packet){
 		inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
 
-		printf("-------------------------\nsrc ip %s ---> dst ip %s\n", src, dst);
+		printf("--------- IP Header --------\nsrc ip %s ---> dst ip %s\n", src, dst);
 	}
 
 	select_protocol(iphdr->ip_p, packet);
@@ -183,6 +197,8 @@ void print_ip_full(const unsigned char *packet){
 	char dst[INET_ADDRSTRLEN], src[INET_ADDRSTRLEN];
 	char *checksum_correct = "(correct)", *protocol_string = "";
 	char *src_name, *dst_name;
+
+	printf("-------- IP Header ---------\n");
 
 	if(resolve_name){
 		src_name = malloc(MAX_HOST_NAME);
