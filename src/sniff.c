@@ -100,8 +100,6 @@ int main(int argc, char *argv[]){
 				pkt_tot_size += pkthdr.len;
 				
 				print_packet(packet);
-				//line break after every packet
-				printf("\n\n");
 			}
 		}
 	}

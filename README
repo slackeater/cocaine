@@ -6,6 +6,7 @@ FEATURES (very basic)
 - tcpdump filters
 - IPv4 checksum verification
 - DNS names resolution (to test)
+- Display payload of TCP packets
 
 TODO
 - output in HTLM format. Useful for example when we want to check the sniffer results via web

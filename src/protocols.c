@@ -4,22 +4,11 @@
  */
 void print_tcp_simple(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
-	int i;
 	
 	printf("--------- TCP Header --------\n");
-	printf("src port %d ---> dst port %d\n\n",ntohs(tcp->source),ntohs(tcp->dest));
+	printf("src port %d ---> dst port %d\n",ntohs(tcp->source),ntohs(tcp->dest));
 
-
-
-	for(i = 0 ; i < strlen((char *)packet+58) ; i++){
-		if(isprint(packet[58+i]))
-			printf("%c", packet[58+i]);
-		else
-			printf(".");
-
-		//after 60 character print new line
-		if(i % 60 == 0 && i != 0) printf("\n\r");
-	}
+	print_payload(packet);
 }
 
 /**
@@ -34,7 +23,9 @@ void print_tcp_full(const unsigned char *packet){
 	printf("flags [ %s   %s   %s   %s   %s   %s ]\n", ntohs(tcp->fin) > 0 ? "FIN" : "0",ntohs(tcp->syn) > 0 ? "SYN" : "0",ntohs(tcp->rst) > 0 ? "RST" : "0",ntohs(tcp->psh) > 0 ? "PSH" : "0",ntohs(tcp->ack) > 0 ? "ACK" : "0",ntohs(tcp->urg) > 0 ? "URG" : "0");
 	printf("window %u\n", ntohs(tcp->window));
 	printf("TCP checksum 0x%x\n", ntohs(tcp->check));
-	printf("urg ptr %d\n\n", ntohs(tcp->urg_ptr));
+	printf("urg ptr %d\n", ntohs(tcp->urg_ptr));
+
+	print_payload(packet);
 }
 
 /**

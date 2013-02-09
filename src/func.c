@@ -45,13 +45,13 @@ int compute_checksum_ipv4(struct ip *iphdr){
 
 	//merge version, header lenght and tos (differentiated services code point)	
 	unsigned short firstShort;
-        firstShort = (unsigned short)iphdr->ip_v << 12; 	//put ip_v to the right
-        firstShort |= ((unsigned short)iphdr->ip_hl << 8);      //put ip_hl to next to ip_v
+	firstShort = (unsigned short)iphdr->ip_v << 12; 	//put ip_v to the right
+	firstShort |= ((unsigned short)iphdr->ip_hl << 8);      //put ip_hl to next to ip_v
 	firstShort |= ((unsigned short)iphdr->ip_tos);	        //put ip_tos into the last 8 bits
 
 	//merge the ttl(int:8) and ip_p(int:8) into an unsigned short
 	unsigned short secondShort;
-        secondShort = iphdr->ip_ttl << 8;
+	secondShort = iphdr->ip_ttl << 8;
 	secondShort |= iphdr->ip_p;
 
 	//split the src and destination ip from (int:32) to (short:16)
@@ -73,7 +73,7 @@ int compute_checksum_ipv4(struct ip *iphdr){
 	//sum rest and carry and then invert the bits. 
 	//This must be equal to the checksum of the ip header
 	unsigned short results = ~(rest + carry);
-	
+
 	return (results == ntohs(iphdr->ip_sum));
 }
 
@@ -92,9 +92,32 @@ int resolve_address_to_name(unsigned long addr, char *hostname){
 	if(getnameinfo((struct sockaddr *)&netparam, sizeof(netparam), hostname, MAX_HOST_NAME, NULL, sizeof(NULL), 0) == 0) return 0;
 	else{
 		perror("getnameinfo");
-	       	return -1;
+		return -1;
 	}
-	      
-       return 0;	
+
+	return 0;	
 }
 
+
+/**
+ * Print the payload of packets 
+ * @param const unsigned char *packet The sniffed packet
+ */
+void print_payload(const unsigned char *packet){
+	int i;
+
+	printf("--------- Payload --------\n");
+
+	for(i = 0 ; i < strlen((char *)packet+54) ; i++){
+		if(isprint(packet[i+54]))
+			printf("%c", packet[i+54]);
+		else
+			printf(".");
+
+		//after 60 character print new line
+		if(i % 60 == 0 && i != 0) printf("\n\r");
+	}
+
+
+	printf("\n\n");
+}
