@@ -22,3 +22,12 @@ struct arp {
 	u_char tha[6]; //target MAC
 	u_char tpa[4]; //target IP
 };
+
+struct dnshdr {
+	u_short trans_id;
+	u_short flags;
+	u_short questions;
+	u_short answer_rr;
+	u_short authority_rr;
+	u_short additional_rr;
+};

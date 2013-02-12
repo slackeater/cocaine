@@ -38,6 +38,42 @@ void print_udp(const unsigned char *packet){
 	printf("src port %d ---> dst port %d\n", ntohs(udp->source), ntohs(udp->dest));
 	printf("dgram len %d\n",ntohs(udp->len));
 	printf("UDP checksum  0x%x\n\n",ntohs(udp->check));
+
+	printf("------- Payload --------\n");
+	struct dnshdr *dns = (struct dnshdr *)(packet+42);
+	printf("Transaction ID: %d\n", ntohs(dns->trans_id));
+	printf("Flags: 0x%X\n", ntohs(dns->flags));
+	printf("Questions Count: %d\n", ntohs(dns->questions));
+	printf("Answer Count: %d\n", ntohs(dns->answer_rr));
+	printf("Authority Count: %d\n", ntohs(dns->authority_rr));
+	printf("Additional Count: %d\n", ntohs(dns->additional_rr));
+
+	unsigned int first_length = packet[54];
+
+	int i;
+
+	for(i = 1 ; i <= first_length ; i++)
+		printf("%c", packet[54+i]);
+
+	printf(".");
+
+	unsigned int second_length = packet[55+first_length];
+
+	for(i = 1 ; i <= second_length ; i++)
+		printf("%c", packet[55+first_length+i]);
+
+
+	printf("\n");
+
+	unsigned int terminator = packet[54+first_length+1+second_length+1];
+	printf("Terminator: %d\n", terminator);
+
+	unsigned short int *type = (unsigned short int *)&packet[62];
+	printf("Type: %hx\n", htons(*type));
+
+	unsigned short int *class = (unsigned short int *)&packet[64];
+	printf("Class: %hx\n", htons(*class));
+
 }
 
 /**
