@@ -121,3 +121,49 @@ void print_payload(const unsigned char *packet){
 
 	printf("\n\n");
 }
+
+
+/**
+ * Print the name of the DNS question section
+ * @param const unsigned char *packet a given packet with DNS information
+ * @param int index the beginning index of the name analysis
+ * @param int *question_size the pointer where to store the length of the name
+ */
+void print_dns_name(const unsigned char *packet, int index, int *question_size){
+	int i = 0;
+	int length = packet[index];
+	int total_length = 1+length; //1 bytes for the size indicator + number of chars
+	*question_size += total_length;
+
+	for(i = 1 ; i <= length ; i++)
+		printf("%c", packet[index+i]);
+
+	if(packet[index+length+1] == 0){
+		printf("\n");
+	     	*question_size += 1;
+		return;
+	}
+	//to avoid endless call to the recursive function, we check if the name is longer than 255 octets
+	else if(*question_size > 255){
+		return;
+	}
+	else {
+		printf(".");
+		print_dns_name(packet, index+total_length, question_size);
+	}
+}
+
+/**
+ * Save in the specified array a binary reperesentation of num
+ * @param unsigned char bit_string[] where to store the result
+ * @param int array_size the size of the passed array
+ * @param int num the number to be converted
+ */
+void itob(unsigned char bit_string[], int array_size, int num){
+	int i;
+
+	for(i = 0 ;  i < array_size ; i++){
+		bit_string[i] = (num & (int)pow(2,array_size-1-i)) == 0 ? '0' : '1';
+	}
+}
+

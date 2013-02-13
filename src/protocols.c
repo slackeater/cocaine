@@ -4,7 +4,7 @@
  */
 void print_tcp_simple(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
-	
+
 	printf("--------- TCP Header --------\n");
 	printf("src port %d ---> dst port %d\n",ntohs(tcp->source),ntohs(tcp->dest));
 
@@ -23,9 +23,61 @@ void print_tcp_full(const unsigned char *packet){
 	printf("flags [ %s   %s   %s   %s   %s   %s ]\n", ntohs(tcp->fin) > 0 ? "FIN" : "0",ntohs(tcp->syn) > 0 ? "SYN" : "0",ntohs(tcp->rst) > 0 ? "RST" : "0",ntohs(tcp->psh) > 0 ? "PSH" : "0",ntohs(tcp->ack) > 0 ? "ACK" : "0",ntohs(tcp->urg) > 0 ? "URG" : "0");
 	printf("window %u\n", ntohs(tcp->window));
 	printf("TCP checksum 0x%x\n", ntohs(tcp->check));
-	printf("urg ptr %d\n", ntohs(tcp->urg_ptr));
+	printf("urg ptr %d\n\n", ntohs(tcp->urg_ptr));
 
 	print_payload(packet);
+}
+
+/**
+ * Print information about the DNS protocol
+ * @param unsigned cahr *packet a given packet
+ */
+void print_dns(const unsigned char *packet){
+
+	int question_size = 0;
+	int offset = 0;
+	struct dnshdr *dns = (struct dnshdr *)(packet+42);
+	unsigned short int *type, *class;
+	unsigned char flags_bit[16];
+
+	printf("------- DNS --------\n\n");
+	printf("Transaction ID: 0x%hx\n", ntohs(dns->trans_id));
+	
+	itob(flags_bit, 16, ntohs(dns->flags));
+
+	printf("Flags: 0x%X (%s)\n", ntohs(dns->flags), flags_bit);
+
+	if(ntohs(dns->questions) > 0){
+		printf("Questions Count: %hu\n", ntohs(dns->questions));
+		printf("\t --> Name: ");	
+
+		//54 is the beginning of the DNS section
+		print_dns_name(packet, 54, &question_size);
+
+		//printf("Question size: %d\n", question_size);
+
+		type = (unsigned short int *)&packet[54+question_size];
+		printf("\t --> Type: %hx\n", htons(*type));
+
+		class = (unsigned short int *)&packet[54+question_size+2];
+
+		printf("\t --> Class: %hx\n", htons(*class));
+
+		//end of question section
+		offset = 54+question_size+4;
+	}
+
+	if(ntohs(dns->answer_rr) > 0){
+		printf("Answer Count: %hu\n", ntohs(dns->answer_rr));
+	}
+
+	if(ntohs(dns->authority_rr) > 0){
+		printf("Authority Count: %hu\n", ntohs(dns->authority_rr));
+	}
+
+	if(ntohs(dns->additional_rr) > 0){
+		printf("Additional Count: %hu\n", ntohs(dns->additional_rr));
+	}
 }
 
 /**
@@ -34,48 +86,15 @@ void print_tcp_full(const unsigned char *packet){
  */
 void print_udp(const unsigned char *packet){
 	struct udphdr *udp = (struct udphdr *)(packet+34);
-	printf("-------- UDP Header --------\n");
+	printf("\n\n-------- UDP Header --------\n\n");
 	printf("src port %d ---> dst port %d\n", ntohs(udp->source), ntohs(udp->dest));
 	printf("dgram len %d\n",ntohs(udp->len));
 	printf("UDP checksum  0x%x\n\n",ntohs(udp->check));
 
-	printf("------- Payload --------\n");
-	struct dnshdr *dns = (struct dnshdr *)(packet+42);
-	printf("Transaction ID: %d\n", ntohs(dns->trans_id));
-	printf("Flags: 0x%X\n", ntohs(dns->flags));
-	printf("Questions Count: %d\n", ntohs(dns->questions));
-	printf("Answer Count: %d\n", ntohs(dns->answer_rr));
-	printf("Authority Count: %d\n", ntohs(dns->authority_rr));
-	printf("Additional Count: %d\n", ntohs(dns->additional_rr));
-
-	unsigned int first_length = packet[54];
-
-	int i;
-
-	for(i = 1 ; i <= first_length ; i++)
-		printf("%c", packet[54+i]);
-
-	printf(".");
-
-	unsigned int second_length = packet[55+first_length];
-
-	for(i = 1 ; i <= second_length ; i++)
-		printf("%c", packet[55+first_length+i]);
-
-
-	printf("\n");
-
-	unsigned int terminator = packet[54+first_length+1+second_length+1];
-	printf("Terminator: %d\n", terminator);
-
-	unsigned short int *type = (unsigned short int *)&packet[62];
-	printf("Type: %hx\n", htons(*type));
-
-	unsigned short int *class = (unsigned short int *)&packet[64];
-	printf("Class: %hx\n", htons(*class));
-
+	if(ntohs(udp->source) == 53 || ntohs(udp->dest) == 53){
+		print_dns(packet);
+	}
 }
-
 /**
  * Print information about ICMP protocol
  * @param unsigned char *packet a given packet
@@ -199,7 +218,7 @@ void print_ip_simple(const unsigned char *packet){
 		resolve_address_to_name(iphdr->ip_src.s_addr, src_name);
 		resolve_address_to_name(iphdr->ip_dst.s_addr, dst_name);
 
-		printf("-------- IP Header --------\nsrc %s ---> dst %s\n", src_name, dst_name);
+		printf("\n-------- IP Header --------\n\nsrc %s ---> dst %s", src_name, dst_name);
 
 		free(src_name);
 		free(dst_name);
@@ -209,7 +228,7 @@ void print_ip_simple(const unsigned char *packet){
 		inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
 
-		printf("--------- IP Header --------\nsrc ip %s ---> dst ip %s\n", src, dst);
+		printf("\n--------- IP Header --------\n\nsrc ip %s ---> dst ip %s", src, dst);
 	}
 
 	select_protocol(iphdr->ip_p, packet);
@@ -225,7 +244,7 @@ void print_ip_full(const unsigned char *packet){
 	char *checksum_correct = "(correct)", *protocol_string = "";
 	char *src_name, *dst_name;
 
-	printf("-------- IP Header ---------\n");
+	printf("\n-------- IP Header ---------\n\n");
 
 	if(resolve_name){
 		src_name = malloc(MAX_HOST_NAME);
@@ -236,7 +255,7 @@ void print_ip_full(const unsigned char *packet){
 		resolve_address_to_name(iphdr->ip_dst.s_addr, dst_name);
 
 		printf("src %s ---> ", src_name);		
-		printf("dst %s\n", dst_name);		
+		printf("dst %s", dst_name);		
 
 		free(src_name);
 		free(dst_name);
@@ -245,9 +264,9 @@ void print_ip_full(const unsigned char *packet){
 		//print IP directly
 		inet_ntop(AF_INET, &iphdr->ip_src, src, INET_ADDRSTRLEN);
 		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
-		
+
 		printf("src ip %s ---> ",src);
-		printf("dst ip %s\n",dst);
+		printf("dst ip %s",dst);
 	}
 
 	printf("version %u\t  \ttos %u\n",iphdr->ip_v, iphdr->ip_tos);
