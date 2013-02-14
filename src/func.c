@@ -130,9 +130,15 @@ void print_payload(const unsigned char *packet){
  * @param int *question_size the pointer where to store the length of the name
  */
 void print_dns_name(const unsigned char *packet, int index, int *question_size){
-	int i = 0;
-	int length = packet[index];
-	int total_length = 1+length; //1 bytes for the size indicator + number of chars
+	int i = 0, newindex = 0;
+	int length, total_length;
+
+	//printf("INDEX %d ===== %x\n", index, packet[index+1]);
+
+	if(packet[index] == 0xc0) print_dns_name(packet,42+packet[index+1], question_size);
+
+	length = packet[index];
+	total_length = 1+length; //1 byte for the size indicator + the total number of chars
 	*question_size += total_length;
 
 	for(i = 1 ; i <= length ; i++)
@@ -149,7 +155,14 @@ void print_dns_name(const unsigned char *packet, int index, int *question_size){
 	}
 	else {
 		printf(".");
-		print_dns_name(packet, index+total_length, question_size);
+		//printf("PACKET VALUE: %x\n", packet[index+total_length]);
+		//printf("NEXT VALUE: %d\n", packet[index+total_length+1]);
+		if(packet[index+total_length] == 0xc0) newindex = 42+packet[index+total_length+1];
+		else newindex = index+total_length;
+
+		//printf("NEWINDEX: %d", newindex);
+
+		print_dns_name(packet, newindex, question_size);
 	}
 }
 

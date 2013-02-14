@@ -37,18 +37,25 @@ void print_dns(const unsigned char *packet){
 	int question_size = 0;
 	int offset = 0;
 	struct dnshdr *dns = (struct dnshdr *)(packet+42);
-	unsigned short int *type, *class;
+	unsigned short int *type, *class, *data_length;
+	unsigned short question_rr, answer_rr, authority_rr, additional_rr;
 	unsigned char flags_bit[16];
+	int i, cname_chars;
 
 	printf("------- DNS --------\n\n");
 	printf("Transaction ID: 0x%hx\n", ntohs(dns->trans_id));
-	
+
 	itob(flags_bit, 16, ntohs(dns->flags));
 
 	printf("Flags: 0x%X (%s)\n", ntohs(dns->flags), flags_bit);
 
-	if(ntohs(dns->questions) > 0){
-		printf("Questions Count: %hu\n", ntohs(dns->questions));
+	question_rr = ntohs(dns->questions);
+	answer_rr = ntohs(dns->answer_rr);
+	authority_rr = ntohs(dns->authority_rr);
+	additional_rr = ntohs(dns->additional_rr);
+
+	if(question_rr > 0){
+		printf("Questions Count: %hu\n", question_rr);
 		printf("\t --> Name: ");	
 
 		//54 is the beginning of the DNS section
@@ -67,15 +74,55 @@ void print_dns(const unsigned char *packet){
 		offset = 54+question_size+4;
 	}
 
-	if(ntohs(dns->answer_rr) > 0){
-		printf("Answer Count: %hu\n", ntohs(dns->answer_rr));
+	if(answer_rr > 0){
+		printf("Answer Count: %hu\n", answer_rr);
+
+		for(i = 1 ; i <= answer_rr ; i++){
+
+			printf("\n\t --> Name: ");
+
+			if(packet[offset] == 0xc0){ //compression is used
+			//	printf("INDEX %d\n", 42+packet[offset+1]);
+				print_dns_name(packet, 42+packet[offset+1], &question_size);
+			}
+
+			type = (unsigned short *)&packet[offset+2];
+			data_length = (unsigned short *)&packet[offset+10];
+
+			printf("\t --> Type: %hx\n",htons(*type));
+			printf("\t --> Class: %hx\n", htons(*(unsigned short *)&packet[offset+4])); 
+			printf("\t --> TTL (seconds): %d\n", htonl(*(unsigned int *)&packet[offset+6])); 
+			printf("\t --> Data length: %d\n", htons(*data_length)); 
+
+			if(htons(*type) == 5){
+				printf("\t --> Primaryname: ");
+				int name_length = packet[offset+12];
+
+				for(cname_chars = 1 ; cname_chars <= name_length ; cname_chars++)
+					printf("%c", packet[offset+12+cname_chars]);
+
+				printf(".");
+
+				if(packet[offset+12+name_length+1] == 0xc0)
+					print_dns_name(packet, 42+packet[offset+12+name_length+2], &question_size);
+			}	
+			else{
+				printf("\t --> Addr: %d.%d.%d.%d\n\n", packet[offset+12],packet[offset+13],packet[offset+14],packet[offset+15]); 
+			}
+
+			offset += 12+htons(*data_length);
+
+		}
+
+		printf("\t Test: %x\n", packet[offset]);
+
 	}
 
-	if(ntohs(dns->authority_rr) > 0){
+	if(authority_rr > 0){
 		printf("Authority Count: %hu\n", ntohs(dns->authority_rr));
 	}
 
-	if(ntohs(dns->additional_rr) > 0){
+	if(additional_rr > 0){
 		printf("Additional Count: %hu\n", ntohs(dns->additional_rr));
 	}
 }
