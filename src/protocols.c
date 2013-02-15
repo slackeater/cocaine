@@ -40,7 +40,8 @@ void print_dns(const unsigned char *packet){
 	unsigned short int *type, *class, *data_length;
 	unsigned short question_rr, answer_rr, authority_rr, additional_rr;
 	unsigned char flags_bit[16];
-	int i, cname_chars;
+	char ip_address[16];
+	int i;
 
 	printf("------- DNS --------\n\n");
 	printf("Transaction ID: 0x%hx\n", ntohs(dns->trans_id));
@@ -72,6 +73,7 @@ void print_dns(const unsigned char *packet){
 
 		//end of question section
 		offset = 54+question_size+4;
+		question_size = 0;
 	}
 
 	if(answer_rr > 0){
@@ -82,40 +84,35 @@ void print_dns(const unsigned char *packet){
 			printf("\n\t --> Name: ");
 
 			if(packet[offset] == 0xc0){ //compression is used
-			//	printf("INDEX %d\n", 42+packet[offset+1]);
 				print_dns_name(packet, 42+packet[offset+1], &question_size);
+				question_size = 0;
 			}
 
 			type = (unsigned short *)&packet[offset+2];
 			data_length = (unsigned short *)&packet[offset+10];
+			inet_ntop(AF_INET, (unsigned int *)&packet[offset+12], ip_address, 20);
 
 			printf("\t --> Type: %hx\n",htons(*type));
 			printf("\t --> Class: %hx\n", htons(*(unsigned short *)&packet[offset+4])); 
 			printf("\t --> TTL (seconds): %d\n", htonl(*(unsigned int *)&packet[offset+6])); 
 			printf("\t --> Data length: %d\n", htons(*data_length)); 
 
+			//TYPE CNAME
 			if(htons(*type) == 5){
 				printf("\t --> Primaryname: ");
-				int name_length = packet[offset+12];
+				print_dns_name(packet, offset+12, &question_size);
+				question_size = 0;
 
-				for(cname_chars = 1 ; cname_chars <= name_length ; cname_chars++)
-					printf("%c", packet[offset+12+cname_chars]);
-
-				printf(".");
-
-				if(packet[offset+12+name_length+1] == 0xc0)
-					print_dns_name(packet, 42+packet[offset+12+name_length+2], &question_size);
-			}	
+				//if(packet[offset+12+name_length+1] == 0xc0)
+				//	print_dns_name(packet, 42+packet[offset+12+name_length+2], &question_size);
+			}
+			//TYPE A	
 			else{
-				printf("\t --> Addr: %d.%d.%d.%d\n\n", packet[offset+12],packet[offset+13],packet[offset+14],packet[offset+15]); 
+				printf("\t --> Addr: %s\n\n", ip_address); 
 			}
 
 			offset += 12+htons(*data_length);
-
 		}
-
-		printf("\t Test: %x\n", packet[offset]);
-
 	}
 
 	if(authority_rr > 0){
