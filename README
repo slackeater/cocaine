@@ -13,4 +13,4 @@ TODO
 
 COMPILE
 
-gcc -lpcap -Wall -g sniff.c -o ../bin/cocaine
+gcc -lm -lpcap -Wall -g sniff.c -o ../bin/cocaine

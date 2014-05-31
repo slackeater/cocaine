@@ -5,7 +5,7 @@
 void print_tcp_simple(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
 
-	printf("--------- TCP Header --------\n");
+	printf("\n--------- TCP Header --------\n");
 	printf("src port %d ---> dst port %d\n",ntohs(tcp->source),ntohs(tcp->dest));
 
 	print_payload(packet);
@@ -17,9 +17,10 @@ void print_tcp_simple(const unsigned char *packet){
  */
 void print_tcp_full(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
-	printf("--------- TCP Header --------\n");
+	printf("\n--------- TCP Header --------\n");
 	printf("src port %d ---> dst port %d\n",ntohs(tcp->source),ntohs(tcp->dest));
 	printf("seq num  %u, ack num  %u\n",ntohl(tcp->seq),ntohl(tcp->ack_seq));
+	printf("data offset %d\treserved %d\n", 4*(ntohs(tcp->doff)>>8), tcp->res1);
 	printf("flags [ %s   %s   %s   %s   %s   %s ]\n", ntohs(tcp->fin) > 0 ? "FIN" : "0",ntohs(tcp->syn) > 0 ? "SYN" : "0",ntohs(tcp->rst) > 0 ? "RST" : "0",ntohs(tcp->psh) > 0 ? "PSH" : "0",ntohs(tcp->ack) > 0 ? "ACK" : "0",ntohs(tcp->urg) > 0 ? "URG" : "0");
 	printf("window %u\n", ntohs(tcp->window));
 	printf("TCP checksum 0x%x\n", ntohs(tcp->check));
@@ -43,7 +44,7 @@ void print_dns(const unsigned char *packet){
 	char ip_address[16];
 	int i;
 
-	printf("------- DNS --------\n\n");
+	printf("\n------- DNS --------\n\n");
 	printf("Transaction ID: 0x%hx\n", ntohs(dns->trans_id));
 
 	itob(flags_bit, 16, ntohs(dns->flags));
@@ -146,7 +147,7 @@ void print_udp(const unsigned char *packet){
 void print_icmp(const unsigned char *packet){
 	struct icmphdr *icmp = (struct icmphdr *)(packet+34);
 	char *icmp_msg_string = "";
-	printf("-------- ICMP --------\n");
+	printf("\n-------- ICMP --------\n");
 
 	switch(icmp->type){
 		case ICMP_ECHOREPLY:
@@ -202,7 +203,7 @@ void print_arp(const unsigned char *packet){
 	struct arp *arphdr = (struct arp *)(packet+14);
 	int i;
 
-	printf("-------- ARP Header --------\n");
+	printf("\n-------- ARP Header --------\n");
 	printf("Hardware type 0x%04x | Protocol type 0x%04x\n", ntohs(arphdr->hw_type), ntohs(arphdr->proto_type));
 	printf("Hardware addr len %u | Protocol add len %u\n", arphdr->hlen, arphdr->plen);
 	printf("Operation 0x%04x\n", ntohs(arphdr->operation));
@@ -299,7 +300,7 @@ void print_ip_full(const unsigned char *packet){
 		resolve_address_to_name(iphdr->ip_dst.s_addr, dst_name);
 
 		printf("src %s ---> ", src_name);		
-		printf("dst %s", dst_name);		
+		printf("dst %s ", dst_name);		
 
 		free(src_name);
 		free(dst_name);
@@ -310,10 +311,10 @@ void print_ip_full(const unsigned char *packet){
 		inet_ntop(AF_INET, &iphdr->ip_dst, dst, INET_ADDRSTRLEN);
 
 		printf("src ip %s ---> ",src);
-		printf("dst ip %s",dst);
+		printf("dst ip %s ",dst);
 	}
 
-	printf("version %u\t  \ttos %u\n",iphdr->ip_v, iphdr->ip_tos);
+	printf("\nversion %u\t  \ttos %u\n",iphdr->ip_v, iphdr->ip_tos);
 	printf("tot len %u\t  \tidentification %u\n",ntohs(iphdr->ip_len), ntohs(iphdr->ip_len));
 	unsigned short fragment_offset = ntohs(iphdr->ip_off);
 	printf("flags [ %s %s %s ] \n", (fragment_offset&IP_RF) != 0 ? "RF" : "0", fragment_offset&IP_DF ? "DF" : "0", fragment_offset&IP_MF ? "MF" : "0");
