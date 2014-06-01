@@ -1,0 +1,321 @@
+[0;34mPacket #: 1[0m - Packet size: 74 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 60	  	identification 60
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c7
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572703, ack num  0
+data offset 40	reserved 0
+flags [ 0   SYN   0   0   0   0 ]
+window 29200
+TCP checksum 0xb53a
+urg ptr 0
+
+---- Options (20) ----
+Kind 2	Length 4	Maximum Segment Size 1460
+Kind 4	Length 2	SACK Permitted
+Kind 8	Length 10	Timestamp value 14937366	Timestamp echo reply 0
+Kind 1	NOP
+Kind 3	Length 3	Shift Count: 7
+[0;34mPacket #: 2[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0ce
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572704, ack num  1827915336
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 229
+TCP checksum 0x40c8
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937429	Timestamp echo reply 215208971
+[0;34mPacket #: 3[0m - Packet size: 108 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 94	  	identification 94
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0a3
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572704, ack num  1827915336
+data offset 32	reserved 0
+flags [ 0   0   0   PSH   ACK   0 ]
+window 229
+TCP checksum 0xc055
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937429	Timestamp echo reply 215208971
+[0;34mPacket #: 4[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0cc
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827916784
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 251
+TCP checksum 0x3aae
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937462	Timestamp echo reply 215208988
+[0;34mPacket #: 5[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0cb
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827918232
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 274
+TCP checksum 0x34ee
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937463	Timestamp echo reply 215208988
+[0;34mPacket #: 6[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0ca
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827919680
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 296
+TCP checksum 0x2f30
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937463	Timestamp echo reply 215208988
+[0;34mPacket #: 7[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c9
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827921128
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 319
+TCP checksum 0x2971
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937463	Timestamp echo reply 215208988
+[0;34mPacket #: 8[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c8
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827922576
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 342
+TCP checksum 0x23b1
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937464	Timestamp echo reply 215208988
+[0;34mPacket #: 9[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c7
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827923700
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 364
+TCP checksum 0x1f36
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937465	Timestamp echo reply 215208988
+[0;34mPacket #: 10[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c6
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827925148
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 387
+TCP checksum 0x1977
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937465	Timestamp echo reply 215208988
+[0;34mPacket #: 11[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c5
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827926272
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 410
+TCP checksum 0x14fc
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937465	Timestamp echo reply 215208988
+[0;34mPacket #: 12[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c4
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827926277
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 410
+TCP checksum 0x14f7
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937465	Timestamp echo reply 215208988
+[0;34mPacket #: 13[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52
+flags [ 0 DF 0 ] 
+frag offset 0	  	ttl 64
+protocol 6 (TCP)	  	IP checksum 0xe0c3
+
+--------- TCP Header --------
+src port 49844 ---> dst port 80
+seq num  816572746, ack num  1827927725
+data offset 32	reserved 0
+flags [ 0   0   0   0   ACK   0 ]
+window 432
+TCP checksum 0xef8
+urg ptr 0
+
+---- Options (12) ----
+Kind 1	NOP
+Kind 1	NOP
+Kind 8	Length 10	Timestamp value 14937516	Timestamp echo reply 215209002
+[0;34mPacket #: 14[0m - Packet size: 66 Bytes - Sun Jun  1 01:58:47 2014
+
+-------- IP Header ---------
+
+src 192.168.0.15 ---> dst ks214137.kimsufi.com 
+version 4	  	tos 0
+tot len 52	  	identification 52

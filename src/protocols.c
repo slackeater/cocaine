@@ -17,16 +17,81 @@ void print_tcp_simple(const unsigned char *packet){
  */
 void print_tcp_full(const unsigned char *packet){
 	struct tcphdr *tcp = (struct tcphdr *)(packet+34);
+	unsigned short opt_field_length = 0;
+
 	printf("\n--------- TCP Header --------\n");
 	printf("src port %d ---> dst port %d\n",ntohs(tcp->source),ntohs(tcp->dest));
 	printf("seq num  %u, ack num  %u\n",ntohl(tcp->seq),ntohl(tcp->ack_seq));
-	printf("data offset %d\treserved %d\n", 4*(ntohs(tcp->doff)>>8), tcp->res1);
+
+	//data offset is computed in word, a word is is 4 bytes so a data offset of 10 words will result in 40 bytes
+	unsigned short dataoffset = 4*(ntohs(tcp->doff)>>8);
+
+	printf("data offset %d\treserved %d\n", dataoffset, tcp->res1);
 	printf("flags [ %s   %s   %s   %s   %s   %s ]\n", ntohs(tcp->fin) > 0 ? "FIN" : "0",ntohs(tcp->syn) > 0 ? "SYN" : "0",ntohs(tcp->rst) > 0 ? "RST" : "0",ntohs(tcp->psh) > 0 ? "PSH" : "0",ntohs(tcp->ack) > 0 ? "ACK" : "0",ntohs(tcp->urg) > 0 ? "URG" : "0");
 	printf("window %u\n", ntohs(tcp->window));
 	printf("TCP checksum 0x%x\n", ntohs(tcp->check));
 	printf("urg ptr %d\n\n", ntohs(tcp->urg_ptr));
 
-	print_payload(packet);
+	//get options
+	if(dataoffset > 20 && dataoffset <= 60){
+		opt_field_length = dataoffset - 20;	//size of options in bytes
+		unsigned char opt_ptr = 0;	//pointer of options
+
+		printf("---- Options (%d) ----\n", opt_field_length);
+
+		while(opt_ptr < opt_field_length){
+			unsigned char *kind = (unsigned char *)(packet+34+20+opt_ptr); // go to the beginning of the option, kind
+
+			printf("Kind %u\t", *kind); //print the value at that pointer address
+			opt_ptr += 1;
+
+			if(*kind == 1) {
+				printf("NOP\n");
+			}
+			else{
+				unsigned char *length = (unsigned char *)(packet+34+20+opt_ptr); // go the length field
+				printf("Length %u\t", *length);
+				opt_ptr += 1;
+
+				switch (*kind){
+					case 2: //Maximum Segment Size
+						{ //switch does not allow to declare variable inside case because a variable is not a statement	
+							unsigned short *max_seg = (unsigned short *)(packet+34+20+opt_ptr);
+							printf("Maximum Segment Size %hu\n", ntohs(*max_seg));
+							opt_ptr += 2; //4 - kind - length
+							break;
+						}
+					case 3: //Window Scale
+						{	
+							unsigned char *shift_count = (unsigned char *)(packet+34+20+opt_ptr);
+							printf("Shift Count: %hx\n", *shift_count);
+							opt_ptr += 1; //3 - kind - length
+							break;
+						}
+					case 4: //SACK Permitted
+						printf("SACK Permitted\n");
+						break;
+					case 5: //SACK
+						printf("\n");
+						opt_ptr += *length-2; //SACK length - kind -length
+						break;
+					case 8: //TSOPT - Time Stamp Option
+						{	
+							unsigned int *ts_val = (unsigned int*)(packet+34+20+opt_ptr);
+							printf("Timestamp value %u\t", ntohl(*ts_val));
+							opt_ptr += 4; //10 - kind -length
+
+							unsigned int *ts_echo_reply = (unsigned int*)(packet+34+20+opt_ptr);
+							printf("Timestamp echo reply %u\n", ntohl(*ts_echo_reply));	
+							opt_ptr += 4; //10 - kind -length - tsval
+							break;
+						}
+				}
+			}
+		}
+	}
+
+	//print_payload(packet+opt_field_length);
 }
 
 /**
